@@ -1,20 +1,34 @@
 from pathlib import Path
 import requests
-from icalendar import Calendar
 
-URL = "https://houseofpickle.podplay.app/community/events?location=tuggerah"
+url = "https://houseofpickle.podplay.app/community/events?location=tuggerah"
 
-response = requests.get(URL, timeout=30)
+response = requests.get(url, timeout=30)
+
+html = response.text
 
 Path("hop_debug.html").write_text(
-    response.text,
+    html,
     encoding="utf-8"
 )
 
-cal = Calendar()
-cal.add("prodid", "-//House Of Pickle Debug//")
-cal.add("version", "2.0")
+interesting = []
 
-Path("hop.ics").write_bytes(cal.to_ical())
+for line in html.splitlines():
+    lower = line.lower()
 
-print("Debug page saved")
+    if (
+        "event" in lower
+        or "api" in lower
+        or "graphql" in lower
+        or "podplay" in lower
+        or "tuggerah" in lower
+    ):
+        interesting.append(line)
+
+Path("hop_clues.txt").write_text(
+    "\n".join(interesting),
+    encoding="utf-8"
+)
+
+print("Debug files created")
