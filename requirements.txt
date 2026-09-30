@@ -1,1 +1,5 @@
-# placeholder
+requests
+beautifulsoup4
+icalendar
+python-dateutil
+pytz
