@@ -1,21 +1,18 @@
 from pathlib import Path
 import requests
-import re
 
-url = "https://houseofpickle.podplay.app/community/events?location=tuggerah"
+build_id = "HWjzM42HVwk30WjQWQeCv"
 
-html = requests.get(url, timeout=30).text
-
-Path("hop_debug.html").write_text(html, encoding="utf-8")
-
-matches = re.findall(
-    r'/_next/data/[^"]+|buildId":"[^"]+"',
-    html
+url = (
+    f"https://houseofpickle.podplay.app/_next/data/"
+    f"{build_id}/community/events.json?location=tuggerah"
 )
 
-Path("hop_next_paths.txt").write_text(
-    "\n".join(matches),
+response = requests.get(url, timeout=30)
+
+Path("hop_json_debug.txt").write_text(
+    response.text,
     encoding="utf-8"
 )
 
-print("Next.js paths extracted")
+print("Downloaded:", response.status_code)
