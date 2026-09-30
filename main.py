@@ -8,11 +8,14 @@ html = requests.get(url, timeout=30).text
 
 Path("hop_debug.html").write_text(html, encoding="utf-8")
 
-matches = re.findall(r"__NEXT_DATA__.*", html)
+matches = re.findall(
+    r'/_next/data/[^"]+|buildId":"[^"]+"',
+    html
+)
 
-Path("hop_next_data.txt").write_text(
+Path("hop_next_paths.txt").write_text(
     "\n".join(matches),
     encoding="utf-8"
 )
 
-print("Debug generated")
+print("Next.js paths extracted")
