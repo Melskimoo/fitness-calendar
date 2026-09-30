@@ -1,12 +1,10 @@
-name: Test Workflow
+name: Disabled
  
-"on":
+on:
 workflow_dispatch:
  
 jobs:
-test:
+disabled:
 runs-on: ubuntu-latest
- 
 steps:
-- name: Test
-run: echo Hello
+- run: echo "disabled"
