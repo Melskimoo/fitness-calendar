@@ -152,8 +152,49 @@ for row in soup.select(".timetable-row"):
     ):
         matches.append(row_text)
 
+Path("mingara_playwright.html").write_text(
+    html,
+    encoding="utf-8"
+)
+
+soup = BeautifulSoup(html, "html.parser")
+
+matches = []
+
+TARGET_CLASSES = [
+    "Body Pump",
+    "Body Pump HEAVY",
+    "Body Step",
+    "Barbell",
+    "Dance"
+]
+
+for row in soup.select(".timetable-row"):
+
+    title = row.select_one(".class-title")
+
+    if not title:
+        continue
+
+    title_text = title.get_text(strip=True)
+
+    if not any(
+        target.lower() in title_text.lower()
+        for target in TARGET_CLASSES
+    ):
+        continue
+
+    time_div = row.select_one(".class-time")
+    duration_div = row.select_one(".class-duration")
+
+    matches.append(
+        f"{title_text} | "
+        f"{time_div.get_text(strip=True) if time_div else 'No Time'} | "
+        f"{duration_div.get_text(strip=True) if duration_div else 'No Duration'}"
+    )
+
 Path("mingara_matches.txt").write_text(
-    "\n\n".join(matches),
+    "\n".join(matches),
     encoding="utf-8"
 )
 
