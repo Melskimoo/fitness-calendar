@@ -97,3 +97,31 @@ for heading in soup.find_all("h3"):
 Path("hop.ics").write_bytes(cal.to_ical())
 
 print(f"Created {events_found} events")
+
+Path("hop.ics").write_bytes(cal.to_ical())
+
+print(f"Created {events_found} events")
+
+
+# MINGARA TEST
+
+MINGARA_URL = "https://onebymingara.com.au/timetables/"
+
+with sync_playwright() as p:
+
+    browser = p.chromium.launch(headless=True)
+
+    page = browser.new_page()
+
+    page.goto(MINGARA_URL, wait_until="networkidle")
+
+    html = page.content()
+
+    browser.close()
+
+Path("mingara_playwright.html").write_text(
+    html,
+    encoding="utf-8"
+)
+
+print("Mingara page captured")
