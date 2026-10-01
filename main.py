@@ -130,4 +130,31 @@ Path("mingara_playwright.html").write_text(
     encoding="utf-8"
 )
 
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(html, "html.parser")
+
+matches = []
+
+for row in soup.select(".timetable-row"):
+
+    row_text = row.get_text(" ", strip=True)
+
+    if any(
+        x.lower() in row_text.lower()
+        for x in [
+            "Body Pump",
+            "Body Pump HEAVY",
+            "Body Step",
+            "Barbell",
+            "Dance"
+        ]
+    ):
+        matches.append(row_text)
+
+Path("mingara_matches.txt").write_text(
+    "\n\n".join(matches),
+    encoding="utf-8"
+)
+
 print("Mingara page captured")
