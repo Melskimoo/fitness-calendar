@@ -159,7 +159,12 @@ Path("mingara_playwright.html").write_text(
 
 soup = BeautifulSoup(html, "html.parser")
 
-matches = []
+from icalendar import Calendar, Event
+from datetime import datetime, timedelta
+
+mingara_cal = Calendar()
+mingara_cal.add("prodid", "-//Mingara Fitness//")
+mingara_cal.add("version", "2.0")
 
 TARGET_CLASSES = [
     "Body Pump",
@@ -168,6 +173,11 @@ TARGET_CLASSES = [
     "Barbell",
     "Dance"
 ]
+
+# Temporary date while we prove the calendar works
+event_date = datetime(2026, 10, 2)
+
+events_found = 0
 
 for row in soup.select(".timetable-row"):
 
@@ -187,15 +197,47 @@ for row in soup.select(".timetable-row"):
     time_div = row.select_one(".class-time")
     duration_div = row.select_one(".class-duration")
 
-    matches.append(
-        f"{title_text} | "
-        f"{time_div.get_text(strip=True) if time_div else 'No Time'} | "
-        f"{duration_div.get_text(strip=True) if duration_div else 'No Duration'}"
+    if not time_div or not duration_div:
+        continue
+
+    start_time = time_div.get_text(strip=True)
+
+    try:
+        start_time = start_time.replace("Finished", "")
+        hours, minutes = map(int, start_time.split(":"))
+    except:
+        continue
+
+    duration_text = duration_div.get_text(strip=True)
+
+    try:
+        duration_minutes = int(duration_text.split()[0])
+    except:
+        duration_minutes = 60
+
+    start = event_date.replace(
+        hour=hours,
+        minute=minutes
     )
 
-Path("mingara_matches.txt").write_text(
-    "\n".join(matches),
-    encoding="utf-8"
+    end = start + timedelta(minutes=duration_minutes)
+
+    event = Event()
+
+    event.add(
+        "summary",
+        f"💪 Mingara: {title_text}"
+    )
+
+    event.add("dtstart", start)
+    event.add("dtend", end)
+
+    mingara_cal.add_component(event)
+
+    events_found += 1
+
+Path("mingara.ics").write_bytes(
+    mingara_cal.to_ical()
 )
 
-print("Mingara page captured")
+print(f"Created {events_found} Mingara events")
