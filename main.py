@@ -54,9 +54,26 @@ for heading in soup.find_all("h3"):
     ):
         continue
 
-    event = Event()
+    time_tag = heading.find_next("time")
 
-    now = datetime.utcnow()
+    if not time_tag:
+        continue
+
+    timestamp = time_tag.get("datetime")
+
+    if not timestamp:
+        continue
+
+    try:
+        start = datetime.fromtimestamp(
+            int(timestamp) / 1000
+        )
+    except:
+        continue
+
+    end = start + timedelta(hours=2)
+
+    event = Event()
 
     event.add(
         "summary",
@@ -65,12 +82,12 @@ for heading in soup.find_all("h3"):
 
     event.add(
         "dtstart",
-        now + timedelta(days=events_found)
+        start
     )
 
     event.add(
         "dtend",
-        now + timedelta(days=events_found, hours=2)
+        end
     )
 
     cal.add_component(event)
