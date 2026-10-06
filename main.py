@@ -120,35 +120,35 @@ with sync_playwright() as p:
     )
 
 days = [
-"Thursday",
-"Friday",
-"Saturday",
-"Sunday",
-"Monday",
-"Tuesday",
-"Wednesday"
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday"
 ]
- 
+
 all_html = []
- 
+
 for day in days:
- 
-try:
- 
-page.click(
-f'button[data-day="{day}"]'
-)
- 
-page.wait_for_timeout(2000)
- 
-all_html.append(page.content())
- 
-print(f"Captured {day}")
- 
-except Exception as ex:
- 
-print(f"Failed {day}: {ex}")
- 
+
+    try:
+
+        page.click(
+            f'button[data-day="{day}"'
+        )
+
+        page.wait_for_timeout(2000)
+
+        all_html.append(page.content())
+
+        print(f"Captured {day}")
+
+    except Exception as ex:
+
+        print(f"Failed {day}: {ex}")
+
 html = "\n".join(all_html)
  
 browser.close()Path("mingara_playwright.html").write_text(
