@@ -151,9 +151,11 @@ for day in days:
 
 html = "\n".join(all_html)
  
-browser.close()Path("mingara_playwright.html").write_text(
-    html,
-    encoding="utf-8"
+browser.close()
+ 
+Path("mingara_playwright.html").write_text(
+html,
+encoding="utf-8"
 )
 
 from bs4 import BeautifulSoup
