@@ -119,13 +119,39 @@ with sync_playwright() as p:
         timeout=60000
     )
 
-    page.wait_for_timeout(5000)
-
-    html = page.content()
-
-    browser.close()
-
-Path("mingara_playwright.html").write_text(
+days = [
+"Thursday",
+"Friday",
+"Saturday",
+"Sunday",
+"Monday",
+"Tuesday",
+"Wednesday"
+]
+ 
+all_html = []
+ 
+for day in days:
+ 
+try:
+ 
+page.click(
+f'button[data-day="{day}"]'
+)
+ 
+page.wait_for_timeout(2000)
+ 
+all_html.append(page.content())
+ 
+print(f"Captured {day}")
+ 
+except Exception as ex:
+ 
+print(f"Failed {day}: {ex}")
+ 
+html = "\n".join(all_html)
+ 
+browser.close()Path("mingara_playwright.html").write_text(
     html,
     encoding="utf-8"
 )
