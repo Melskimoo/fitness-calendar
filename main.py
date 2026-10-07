@@ -1,9 +1,11 @@
 from pathlib import Path
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
+``
 URL = "https://houseofpickle.podplay.app/community/events?location=tuggerah"
 
 INCLUDE_WORDS = [
@@ -233,14 +235,17 @@ with sync_playwright() as p:
 
                     duration_minutes = 60
 
-                start = event_date.replace(
-                    hour=hours,
-                    minute=minutes
-                )
+sydney = ZoneInfo("Australia/Sydney")
 
-                end = start + timedelta(
-                    minutes=duration_minutes
-                )
+start = event_date.replace(
+    hour=hours,
+    minute=minutes,
+    tzinfo=sydney
+)
+
+end = start + timedelta(
+    minutes=duration_minutes
+)
 
                 event = Event()
 
