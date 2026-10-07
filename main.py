@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import datetime, timedelta
-
+from zoneinfo import ZoneInfo
+ 
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
@@ -235,10 +236,11 @@ with sync_playwright() as p:
                 except:
                     duration_minutes = 60
 
-                start = event_date.replace(
-                    hour=hours,
-                    minute=minutes
-                )
+start = event_date.replace(
+    hour=hours,
+    minute=minutes,
+    tzinfo=ZoneInfo("Australia/Sydney")
+)
 
                 end = start + timedelta(
                     minutes=duration_minutes
