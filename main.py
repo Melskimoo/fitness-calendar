@@ -112,21 +112,9 @@ print(f"Created {events_found} events")
 MINGARA_URL = "https://onebymingara.com.au/timetables/"
 
 mingara_cal = Calendar()
-
-mingara_cal.add(
-    "X-WR-TIMEZONE",
-    "Australia/Sydney"
-)
-
-mingara_cal.add(
-    "prodid",
-    "-//Mingara Fitness//"
-)
-
-mingara_cal.add(
-    "version",
-    "2.0"
-)
+mingara_cal.add("prodid", "-//Mingara Fitness//")
+mingara_cal.add("version", "2.0")
+mingara_cal.add("X-WR-TIMEZONE", "Australia/Sydney")
 
 TARGET_CLASSES = [
     "Body Pump",
@@ -185,7 +173,9 @@ with sync_playwright() as p:
 
             for row in soup.select(".timetable-row"):
 
-                title = row.select_one(".class-title")
+                title = row.select_one(
+                    ".class-title"
+                )
 
                 if not title:
                     continue
@@ -198,56 +188,3 @@ with sync_playwright() as p:
                     target.lower() in title_text.lower()
                     for target in TARGET_CLASSES
                 ):
-                    continue
-
-                time_div = row.select_one(
-                    ".class-time"
-                )
-
-                duration_div = row.select_one(
-                    ".class-duration"
-                )
-
-                if not time_div or not duration_div:
-                    continue
-
-                start_time = time_div.get_text(
-                    strip=True
-                ).replace(
-                    "Finished",
-                    ""
-                )
-
-                try:
-                    hours, minutes = map(
-                        int,
-                        start_time.split(":")
-                    )
-                except:
-                    continue
-
-                try:
-                    duration_minutes = int(
-                        duration_div.get_text(
-                            strip=True
-                        ).split()[0]
-                    )
-                except:
-                    duration_minutes = 60
-
-                start = event_date.replace(
-                    hour=hours,
-                    minute=minutes,
-                    tzinfo=ZoneInfo("Australia/Sydney")
-                )
-
-                end = start + timedelta(
-                    minutes=duration_minutes
-                )
-
-                event = Event()
-
-                event.add(
-                    "summary",
-                    f"💪 Mingara: {title_text}"
-                )
