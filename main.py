@@ -30,17 +30,16 @@ with sync_playwright() as p:
     page = browser.new_page()
 
     page.goto(
-    URL,
-    wait_until="domcontentloaded",
-    timeout=60000
-)
+        URL,
+        wait_until="domcontentloaded",
+        timeout=60000
+    )
 
-page.wait_for_timeout(5000)
+    page.wait_for_timeout(5000)
 
     html = page.content()
 
     browser.close()
-
 Path("hop_playwright.html").write_text(
     html,
     encoding="utf-8"
