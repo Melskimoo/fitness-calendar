@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
-
 URL = "https://houseofpickle.podplay.app/community/events?location=tuggerah"
 
 INCLUDE_WORDS = [
@@ -234,18 +233,14 @@ with sync_playwright() as p:
 
                     duration_minutes = 60
 
-start = event_date.replace(
-    hour=hours,
-    minute=minutes
-)
+                start = event_date.replace(
+                    hour=hours,
+                    minute=minutes
+                )
 
-end = start + timedelta(
-    minutes=duration_minutes
-)
-
-end = start + timedelta(
-    minutes=duration_minutes
-)
+                end = start + timedelta(
+                    minutes=duration_minutes
+                )
 
                 event = Event()
 
