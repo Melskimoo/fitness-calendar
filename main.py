@@ -226,18 +226,18 @@ with sync_playwright() as p:
                 if not time_div or not duration_div:
                     continue
 
-              start_time = time_div.get_text(
+              _time = time_div.get_text(
     strip=True
 ).replace("Finished", "")
 
 print(
-    f"{title_text} -> '{start_time}'"
+    f"{title_text} -> '{_time}'"
 )
 
 try:
     hours, minutes = map(
         int,
-        start_time.split(":")
+        _time.split(":")
     )
                 except:
                     continue
@@ -252,14 +252,17 @@ try:
                     duration_minutes = 60
 
                 start = event_date.replace(
-                    hour=hours,
-                    minute=minutes
-                )
+    hour=hours,
+    minute=minutes
+)
 
-                end = start + timedelta(
-                    minutes=duration_minutes
-                )
+print(
+    f"{day_name} | {title_text} | source={start_time} | start={start}"
+)
 
+end = start + timedelta(
+    minutes=duration_minutes
+)
                 event = Event()
 
                 event.add(
