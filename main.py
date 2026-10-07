@@ -107,8 +107,21 @@ print(f"Created {events_found} events")
 MINGARA_URL = "https://onebymingara.com.au/timetables/"
 
 mingara_cal = Calendar()
-mingara_cal.add("prodid", "-//Mingara Fitness//")
-mingara_cal.add("version", "2.0")
+
+mingara_cal.add(
+    "X-WR-TIMEZONE",
+    "Australia/Sydney"
+)
+
+mingara_cal.add(
+    "prodid",
+    "-//Mingara Fitness//"
+)
+
+mingara_cal.add(
+    "version",
+    "2.0"
+)
 
 TARGET_CLASSES = [
     "Body Pump",
