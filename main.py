@@ -235,11 +235,11 @@ with sync_playwright() as p:
                 except:
                     duration_minutes = 60
 
-start = event_date.replace(
-    hour=hours,
-    minute=minutes,
-    tzinfo=ZoneInfo("Australia/Sydney")
-)
+                start = event_date.replace(
+                    hour=hours,
+                    minute=minutes,
+                    tzinfo=ZoneInfo("Australia/Sydney")
+                )
 
                 end = start + timedelta(
                     minutes=duration_minutes
@@ -251,39 +251,3 @@ start = event_date.replace(
                     "summary",
                     f"💪 Mingara: {title_text}"
                 )
-
-                event.add(
-                    "dtstart",
-                    start
-                )
-
-                event.add(
-                    "dtend",
-                    end
-                )
-
-                mingara_cal.add_component(
-                    event
-                )
-
-                mingara_events += 1
-
-            print(
-                f"Captured {day_name}"
-            )
-
-        except Exception as ex:
-
-            print(
-                f"Failed {day_name}: {ex}"
-            )
-
-    browser.close()
-
-Path("mingara.ics").write_bytes(
-    mingara_cal.to_ical()
-)
-
-print(
-    f"Created {mingara_events} Mingara events"
-)
