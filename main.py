@@ -1,6 +1,5 @@
 from pathlib import Path
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
 
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
