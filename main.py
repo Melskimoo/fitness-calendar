@@ -226,15 +226,19 @@ with sync_playwright() as p:
                 if not time_div or not duration_div:
                     continue
 
-                start_time = time_div.get_text(
-                    strip=True
-                ).replace("Finished", "")
+              start_time = time_div.get_text(
+    strip=True
+).replace("Finished", "")
 
-                try:
-                    hours, minutes = map(
-                        int,
-                        start_time.split(":")
-                    )
+print(
+    f"{title_text} -> '{start_time}'"
+)
+
+try:
+    hours, minutes = map(
+        int,
+        start_time.split(":")
+    )
                 except:
                     continue
 
