@@ -235,12 +235,13 @@ with sync_playwright() as p:
 
                     duration_minutes = 60
 
-sydney = ZoneInfo("Australia/Sydney")
-
 start = event_date.replace(
     hour=hours,
-    minute=minutes,
-    tzinfo=sydney
+    minute=minutes
+)
+
+end = start + timedelta(
+    minutes=duration_minutes
 )
 
 end = start + timedelta(
