@@ -119,80 +119,63 @@ with sync_playwright() as p:
         timeout=60000
     )
 
-days = [
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday"
-]
+    days = [
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday"
+    ]
 
-all_html = []
+    all_html = []
 
-for day in days:
+    for day in days:
 
-    try:
+        try:
 
-        page.click(
-            f'button[data-day="{day}"'
-        )
+            page.click(
+                f'button[data-day="{day}"]'
+            )
 
-        page.wait_for_timeout(2000)
+            page.wait_for_timeout(2000)
 
-        all_html.append(page.content())
+            all_html.append(
+                page.content()
+            )
 
-        print(f"Captured {day}")
+            print(f"Captured {day}")
 
-    except Exception as ex:
+        except Exception as ex:
 
-        print(f"Failed {day}: {ex}")
+            print(f"Failed {day}: {ex}")
 
-html = "\n".join(all_html)
- 
-browser.close()
- 
-Path("mingara_playwright.html").write_text(
-html,
-encoding="utf-8"
-)
+    html = "\n".join(all_html)
 
-from bs4 import BeautifulSoup
+    browser.close()
 
-soup = BeautifulSoup(html, "html.parser")
-
-matches = []
-
-for row in soup.select(".timetable-row"):
-
-    row_text = row.get_text(" ", strip=True)
-
-    if any(
-        x.lower() in row_text.lower()
-        for x in [
-            "Body Pump",
-            "Body Pump HEAVY",
-            "Body Step",
-            "Barbell",
-            "Dance"
-        ]
-    ):
-        matches.append(row_text)
-
-Path("mingara_playwright.html").write_text(
+Path(
+    "mingara_playwright.html"
+).write_text(
     html,
     encoding="utf-8"
 )
 
-soup = BeautifulSoup(html, "html.parser")
-
-from icalendar import Calendar, Event
-from datetime import datetime, timedelta
+soup = BeautifulSoup(
+    html,
+    "html.parser"
+)
 
 mingara_cal = Calendar()
-mingara_cal.add("prodid", "-//Mingara Fitness//")
-mingara_cal.add("version", "2.0")
+mingara_cal.add(
+    "prodid",
+    "-//Mingara Fitness//"
+)
+mingara_cal.add(
+    "version",
+    "2.0"
+)
 
 TARGET_CLASSES = [
     "Body Pump",
@@ -202,19 +185,28 @@ TARGET_CLASSES = [
     "Dance"
 ]
 
-# Temporary date while we prove the calendar works
-event_date = datetime(2026, 10, 2)
+event_date = datetime(
+    2026,
+    10,
+    2
+)
 
 events_found = 0
 
-for row in soup.select(".timetable-row"):
+for row in soup.select(
+    ".timetable-row"
+):
 
-    title = row.select_one(".class-title")
+    title = row.select_one(
+        ".class-title"
+    )
 
     if not title:
         continue
 
-    title_text = title.get_text(strip=True)
+    title_text = title.get_text(
+        strip=True
+    )
 
     if not any(
         target.lower() in title_text.lower()
@@ -222,25 +214,52 @@ for row in soup.select(".timetable-row"):
     ):
         continue
 
-    time_div = row.select_one(".class-time")
-    duration_div = row.select_one(".class-duration")
+    time_div = row.select_one(
+        ".class-time"
+    )
 
-    if not time_div or not duration_div:
+    duration_div = row.select_one(
+        ".class-duration"
+    )
+
+    if not time_div:
         continue
 
-    start_time = time_div.get_text(strip=True)
-
-    try:
-        start_time = start_time.replace("Finished", "")
-        hours, minutes = map(int, start_time.split(":"))
-    except:
+    if not duration_div:
         continue
 
-    duration_text = duration_div.get_text(strip=True)
+    start_time = time_div.get_text(
+        strip=True
+    )
+
+    start_time = start_time.replace(
+        "Finished",
+        ""
+    )
 
     try:
-        duration_minutes = int(duration_text.split()[0])
+
+        hours, minutes = map(
+            int,
+            start_time.split(":")
+        )
+
     except:
+
+        continue
+
+    duration_text = duration_div.get_text(
+        strip=True
+    )
+
+    try:
+
+        duration_minutes = int(
+            duration_text.split()[0]
+        )
+
+    except:
+
         duration_minutes = 60
 
     start = event_date.replace(
@@ -248,7 +267,9 @@ for row in soup.select(".timetable-row"):
         minute=minutes
     )
 
-    end = start + timedelta(minutes=duration_minutes)
+    end = start + timedelta(
+        minutes=duration_minutes
+    )
 
     event = Event()
 
@@ -257,15 +278,28 @@ for row in soup.select(".timetable-row"):
         f"💪 Mingara: {title_text}"
     )
 
-    event.add("dtstart", start)
-    event.add("dtend", end)
+    event.add(
+        "dtstart",
+        start
+    )
 
-    mingara_cal.add_component(event)
+    event.add(
+        "dtend",
+        end
+    )
+
+    mingara_cal.add_component(
+        event
+    )
 
     events_found += 1
 
-Path("mingara.ics").write_bytes(
+Path(
+    "mingara.ics"
+).write_bytes(
     mingara_cal.to_ical()
 )
 
-print(f"Created {events_found} Mingara events")
+print(
+    f"Created {events_found} Mingara events"
+)
