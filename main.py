@@ -102,35 +102,6 @@ Path("hop.ics").write_bytes(cal.to_ical())
 
 print(f"Created {events_found} events")
 
-# MINGARA TEST
-
-MINGARA_URL = "https://onebymingara.com.au/timetables/"
-
-with sync_playwright() as p:
-
-    browser = p.chromium.launch(headless=True)
-
-    page = browser.new_page()
-
-    page.goto(
-        MINGARA_URL,
-        wait_until="domcontentloaded",
-        timeout=60000
-    )
-
-    page.wait_for_timeout(5000)
-
-    html = page.content()
-
-    browser.close()
-
-Path("mingara_playwright.html").write_text(
-    html,
-    encoding="utf-8"
-)
-
-print("Mingara page captured")
-print(f"Created {events_found} events")
 # MINGARA
 
 MINGARA_URL = "https://onebymingara.com.au/timetables/"
@@ -194,4 +165,106 @@ with sync_playwright() as p:
                 day_num
             )
 
-            for row
+            for row in soup.select(".timetable-row"):
+
+                title = row.select_one(".class-title")
+
+                if not title:
+                    continue
+
+                title_text = title.get_text(
+                    strip=True
+                )
+
+                if not any(
+                    target.lower() in title_text.lower()
+                    for target in TARGET_CLASSES
+                ):
+                    continue
+
+                time_div = row.select_one(
+                    ".class-time"
+                )
+
+                duration_div = row.select_one(
+                    ".class-duration"
+                )
+
+                if not time_div or not duration_div:
+                    continue
+
+                start_time = time_div.get_text(
+                    strip=True
+                ).replace(
+                    "Finished",
+                    ""
+                )
+
+                try:
+                    hours, minutes = map(
+                        int,
+                        start_time.split(":")
+                    )
+                except:
+                    continue
+
+                try:
+                    duration_minutes = int(
+                        duration_div.get_text(
+                            strip=True
+                        ).split()[0]
+                    )
+                except:
+                    duration_minutes = 60
+
+                start = event_date.replace(
+                    hour=hours,
+                    minute=minutes
+                )
+
+                end = start + timedelta(
+                    minutes=duration_minutes
+                )
+
+                event = Event()
+
+                event.add(
+                    "summary",
+                    f"💪 Mingara: {title_text}"
+                )
+
+                event.add(
+                    "dtstart",
+                    start
+                )
+
+                event.add(
+                    "dtend",
+                    end
+                )
+
+                mingara_cal.add_component(
+                    event
+                )
+
+                mingara_events += 1
+
+            print(
+                f"Captured {day_name}"
+            )
+
+        except Exception as ex:
+
+            print(
+                f"Failed {day_name}: {ex}"
+            )
+
+    browser.close()
+
+Path("mingara.ics").write_bytes(
+    mingara_cal.to_ical()
+)
+
+print(
+    f"Created {mingara_events} Mingara events"
+)
