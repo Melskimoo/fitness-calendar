@@ -131,4 +131,67 @@ Path("mingara_playwright.html").write_text(
 
 print("Mingara page captured")
 print(f"Created {events_found} events")
+# MINGARA
 
+MINGARA_URL = "https://onebymingara.com.au/timetables/"
+
+mingara_cal = Calendar()
+mingara_cal.add("prodid", "-//Mingara Fitness//")
+mingara_cal.add("version", "2.0")
+
+TARGET_CLASSES = [
+    "Body Pump",
+    "Body Pump HEAVY",
+    "Body Step",
+    "Barbell",
+    "Dance"
+]
+
+DAY_DATES = {
+    "Thursday": (8, 10),
+    "Friday": (9, 10),
+    "Saturday": (10, 10),
+    "Sunday": (11, 10),
+    "Monday": (12, 10),
+    "Tuesday": (13, 10),
+    "Wednesday": (14, 10),
+}
+
+mingara_events = 0
+
+with sync_playwright() as p:
+
+    browser = p.chromium.launch(headless=True)
+
+    page = browser.new_page()
+
+    page.goto(
+        MINGARA_URL,
+        wait_until="domcontentloaded",
+        timeout=60000
+    )
+
+    for day_name, (day_num, month_num) in DAY_DATES.items():
+
+        try:
+
+            page.click(
+                f'button[data-day="{day_name}"]'
+            )
+
+            page.wait_for_timeout(2000)
+
+            html = page.content()
+
+            soup = BeautifulSoup(
+                html,
+                "html.parser"
+            )
+
+            event_date = datetime(
+                2026,
+                month_num,
+                day_num
+            )
+
+            for row
