@@ -29,7 +29,13 @@ with sync_playwright() as p:
 
     page = browser.new_page()
 
-    page.goto(URL, wait_until="networkidle")
+    page.goto(
+    URL,
+    wait_until="domcontentloaded",
+    timeout=60000
+)
+
+page.wait_for_timeout(5000)
 
     html = page.content()
 
