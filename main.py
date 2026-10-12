@@ -286,3 +286,125 @@ Path(
 print(
     f"Created {mingara_events} Mingara events"
 )
+# BBMA
+
+bbma_cal = Calendar()
+bbma_cal.add("prodid", "-//BBMA Mingara//")
+bbma_cal.add("version", "2.0")
+
+BBMA_CLASSES = [
+
+    # Karate (combined L2 + L3)
+
+    ("🥋 BBMA: Karate", 0, "17:00", 60),
+    ("🥋 BBMA: Karate", 0, "18:45", 60),
+
+    ("🥋 BBMA: Karate", 2, "12:15", 60),
+    ("🥋 BBMA: Karate", 2, "15:45", 60),
+    ("🥋 BBMA: Karate", 2, "18:45", 60),
+
+    ("🥋 BBMA: Karate", 3, "15:30", 60),
+    ("🥋 BBMA: Karate", 3, "17:30", 60),
+
+    ("🥋 BBMA: Karate", 4, "12:15", 60),
+    ("🥋 BBMA: Karate", 4, "16:00", 60),
+
+    ("🥋 BBMA: Karate", 5, "10:00", 60),
+
+    ("🥋 BBMA: Karate", 6, "12:30", 60),
+
+    # Level 3 / Black Belt only
+
+    ("🥋 BBMA: Level 3 / Black Belt Only", 1, "17:30", 60),
+
+    # Black Belt
+
+    ("🥋 BBMA: Black Belt", 0, "19:00", 60),
+    ("🥋 BBMA: Black Belt", 2, "17:00", 60),
+
+    # Kobudo
+
+    ("🥋 BBMA: Kobudo", 2, "12:15", 45),
+    ("🥋 BBMA: Kobudo", 2, "18:00", 45),
+    ("🥋 BBMA: Kobudo", 4, "19:00", 60),
+    ("🥋 BBMA: Kobudo", 5, "11:00", 60),
+
+    # Kumite
+
+    ("🥋 BBMA: Kumite", 0, "18:00", 60),
+    ("🥋 BBMA: Kumite", 2, "18:00", 45),
+
+    # Kata
+
+    ("🥋 BBMA: Kata", 2, "18:45", 45),
+    ("🥋 BBMA: Kata", 3, "18:30", 60),
+
+    # Kickboxing
+
+    ("🥊 BBMA: Kickboxing", 1, "17:30", 60),
+    ("🥊 BBMA: Kickboxing", 4, "18:00", 60),
+    ("🥊 BBMA: Kickboxing", 6, "09:00", 60),
+]
+
+today = datetime.now().date()
+
+for title, weekday, start_time, duration_minutes in BBMA_CLASSES:
+
+    days_ahead = weekday - today.weekday()
+
+    if days_ahead < 0:
+        days_ahead += 7
+
+    first_date = today + timedelta(days=days_ahead)
+
+    for week in range(52):
+
+        event_day = first_date + timedelta(days=(week * 7))
+
+        hour, minute = map(
+            int,
+            start_time.split(":")
+        )
+
+        start = datetime(
+            event_day.year,
+            event_day.month,
+            event_day.day,
+            hour,
+            minute
+        )
+
+        end = start + timedelta(
+            minutes=duration_minutes
+        )
+
+        event = Event()
+
+        event.add(
+            "summary",
+            title
+        )
+
+        event.add(
+            "dtstart",
+            start
+        )
+
+        event.add(
+            "dtend",
+            end
+        )
+
+        bbma_cal.add_component(
+            event
+        )
+
+Path(
+    "bbma.ics"
+).write_bytes(
+    bbma_cal.to_ical()
+)
+
+print(
+    f"Created {len(BBMA_CLASSES) * 52} BBMA events"
+)
