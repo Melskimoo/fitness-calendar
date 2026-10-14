@@ -370,14 +370,18 @@ for title, weekday, start_time, duration_minutes in BBMA_CLASSES:
 
         sydney = ZoneInfo("Australia/Sydney")
 
-start = datetime(
-    event_day.year,
-    event_day.month,
-    event_day.day,
-    hour,
-    minute,
-    tzinfo=sydney
-)
+        start = datetime(
+            event_day.year,
+            event_day.month,
+            event_day.day,
+            hour,
+            minute,
+            tzinfo=sydney
+        )
+
+        end = start + timedelta(
+            minutes=duration_minutes
+        )
 
         end = start + timedelta(
             minutes=duration_minutes
