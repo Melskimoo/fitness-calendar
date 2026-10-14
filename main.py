@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
@@ -291,6 +292,7 @@ print(
 bbma_cal = Calendar()
 bbma_cal.add("prodid", "-//BBMA Mingara//")
 bbma_cal.add("version", "2.0")
+bbma_cal.add("X-WR-TIMEZONE", "Australia/Sydney")
 
 BBMA_CLASSES = [
 
@@ -366,13 +368,16 @@ for title, weekday, start_time, duration_minutes in BBMA_CLASSES:
             start_time.split(":")
         )
 
-        start = datetime(
-            event_day.year,
-            event_day.month,
-            event_day.day,
-            hour,
-            minute
-        )
+        sydney = ZoneInfo("Australia/Sydney")
+
+start = datetime(
+    event_day.year,
+    event_day.month,
+    event_day.day,
+    hour,
+    minute,
+    tzinfo=sydney
+)
 
         end = start + timedelta(
             minutes=duration_minutes
